@@ -7,15 +7,15 @@
 
 namespace bluedot {
     template <typename Real, typename RNG>
-    FBMOperator<Real, RNG>::FBMOperator(RNG& rng, size_t octaves, Real exponent, const std::vector<Real>& multiplier, Real scale, Real offset) :
-        _rng(rng), _octaves(octaves), _exponent(exponent), _multiplier(multiplier), _scale(scale), _offset(offset)
+    FBMOperator<Real, RNG>::FBMOperator(RNG& rng, size_t octaves, Real exponent, const std::vector<Real>& multiplier, Real scale, Real offset, bool spherical) :
+        _rng(rng), _octaves(octaves), _exponent(exponent), _multiplier(multiplier), _scale(scale), _offset(offset), _spherical(spherical)
     {
     }
 
     template <typename Real, typename RNG>
     auto FBMOperator<Real, RNG>::operator()(Layer<Real>& layer) -> bool
     {
-        FBM<Real, RNG> fbm{_rng, layer.width(), layer.height(), _octaves, _exponent};
+        FBM<Real, RNG> fbm{_rng, layer.width(), layer.height(), _octaves, _exponent, _spherical};
         int num_samples = static_cast<int>(layer.width() * layer.height());
 #pragma omp parallel for schedule(guided)
         for (int s{0}; s < num_samples; ++s)
@@ -42,7 +42,7 @@ namespace bluedot {
     {
         assert(mask.channels() > 0);
 
-        FBM<Real, RNG> fbm{_rng, layer.width(), layer.height(), _octaves, _exponent};
+        FBM<Real, RNG> fbm{_rng, layer.width(), layer.height(), _octaves, _exponent, _spherical};
         int num_samples = static_cast<int>(layer.width() * layer.height());
 #pragma omp parallel for schedule(guided)
         for (int s{0}; s < num_samples; ++s)

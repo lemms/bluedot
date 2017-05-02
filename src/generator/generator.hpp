@@ -11,44 +11,46 @@ namespace bluedot {
     }
 
     template <typename Real>
-    auto Generator<Real>::apply_unary_operator(const std::string& layer, UnaryOperator<Real>& op, const std::string& mask) -> void
+    auto Generator<Real>::apply_unary_operator(const std::string& layer, UnaryOperator<Real>& op, const std::string& mask) -> bool
     {
         auto l = _layers.find(layer);
         if (l == _layers.end())
-            return;
+            return false;
         if (mask == "")
         {
-            op(l->second);
+            return op(l->second);
         }
         else
         {
             auto m = _layers.find(mask);
             if (m == _layers.end())
-                return;
-            op(l->second, m->second);
+                return false;
+            return op(l->second, m->second);
         }
+        return false;
     }
 
     template <typename Real>
-    auto Generator<Real>::apply_binary_operator(const std::string& layer0, const std::string& layer1, BinaryOperator<Real>& op, const std::string& mask) -> void
+    auto Generator<Real>::apply_binary_operator(const std::string& layer0, const std::string& layer1, BinaryOperator<Real>& op, const std::string& mask) -> bool
     {
         auto l0 = _layers.find(layer0);
         if (l0 == _layers.end())
-            return;
+            return false;
         auto l1 = _layers.find(layer1);
         if (l1 == _layers.end())
-            return;
+            return false;
         if (mask == "")
         {
-            op(l0->second, l1->second);
+            return op(l0->second, l1->second);
         }
         else
         {
             auto m = _layers.find(mask);
             if (m == _layers.end())
-                return;
-            op(l0->second, l1->second, m->second);
+                return false;
+            return op(l0->second, l1->second, m->second);
         }
+        return false;
     }
 
     template <typename Real>

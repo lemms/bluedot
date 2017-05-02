@@ -7,6 +7,7 @@
 #include "colortoalphaop.h"
 #include "fbmop.h"
 #include "fillop.h"
+#include "gradientop.h"
 #include "greaterthanop.h"
 #include "lessthanop.h"
 #include "multiplyop.h"

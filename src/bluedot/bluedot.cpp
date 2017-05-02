@@ -19,6 +19,7 @@
 #include "../generator/colortoalphaop.h"
 #include "../generator/fbmop.h"
 #include "../generator/fillop.h"
+#include "../generator/gradientop.h"
 #include "../generator/greaterthanop.h"
 #include "../generator/lessthanop.h"
 #include "../generator/multiplyop.h"
@@ -199,18 +200,19 @@ auto apply_unary_operator(const std::string& type, pt::ptree::value_type &v, blu
     }
 
     // search for mask
-    boost::optional<std::string> pt_mask = v.second.get_optional<std::string>("mask");
+    boost::optional<std::string> pt_mask{v.second.get_optional<std::string>("mask")};
+    bool result{true};
     if (pt_mask)
     {
-        generator.apply_unary_operator(layer, unary_operator, *pt_mask);
+        result = generator.apply_unary_operator(layer, unary_operator, *pt_mask);
     }
     else
     {
-        generator.apply_unary_operator(layer, unary_operator);
+        result = generator.apply_unary_operator(layer, unary_operator);
     }
 
     std::cout << "Applied " << type << " operator to layer " << layer << "\n";
-    return true;
+    return result;
 }
 
 template <typename Real>
@@ -256,18 +258,19 @@ auto apply_binary_operator(const std::string& type, pt::ptree::value_type &v, bl
     }
 
     // search for mask
-    boost::optional<std::string> pt_mask = v.second.get_optional<std::string>("mask");
+    boost::optional<std::string> pt_mask{v.second.get_optional<std::string>("mask")};
+    bool result{true};
     if (pt_mask)
     {
-        generator.apply_binary_operator(layer0, layer1, binary_operator, *pt_mask);
+        result = generator.apply_binary_operator(layer0, layer1, binary_operator, *pt_mask);
     }
     else
     {
-        generator.apply_binary_operator(layer0, layer1, binary_operator);
+        result = generator.apply_binary_operator(layer0, layer1, binary_operator);
     }
 
     std::cout << "Applied " << type << " operator to layers " << layer0 << " and " << layer1 << "\n";
-    return true;
+    return result;
 }
 
 enum Format
@@ -318,7 +321,7 @@ auto parse_multiplier_scale_and_offset(pt::ptree::value_type &v, std::vector<Rea
         }
     }
     else
-        multiplier.push_back(static_cast<Real>(0.0));
+        multiplier.push_back(static_cast<Real>(1.0));
 
     boost::optional<Real> pt_r = v.second.get_optional<Real>("multiplier.r");
     if (pt_r)
@@ -337,7 +340,7 @@ auto parse_multiplier_scale_and_offset(pt::ptree::value_type &v, std::vector<Rea
         }
     }
     else
-        multiplier.push_back(static_cast<Real>(0.0));
+        multiplier.push_back(static_cast<Real>(1.0));
 
     boost::optional<Real> pt_g = v.second.get_optional<Real>("multiplier.g");
     if (pt_g)
@@ -356,7 +359,7 @@ auto parse_multiplier_scale_and_offset(pt::ptree::value_type &v, std::vector<Rea
         }
     }
     else
-        multiplier.push_back(static_cast<Real>(0.0));
+        multiplier.push_back(static_cast<Real>(1.0));
 
     boost::optional<Real> pt_b = v.second.get_optional<Real>("multiplier.b");
     if (pt_b)
@@ -375,7 +378,7 @@ auto parse_multiplier_scale_and_offset(pt::ptree::value_type &v, std::vector<Rea
         }
     }
     else
-        multiplier.push_back(static_cast<Real>(0.0));
+        multiplier.push_back(static_cast<Real>(1.0));
 
     boost::optional<Real> pt_scale = v.second.get_optional<Real>("scale");
     if (pt_scale)
@@ -521,6 +524,7 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
                 continue;
             }
 
+            bool result{true};
             if (type == "AlphaBlendOperator")
             {
                 std::vector<Real> multiplier;
@@ -530,7 +534,7 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
                 parse_multiplier_scale_and_offset(v, multiplier, scale, offset);
 
                 bluedot::AlphaBlendOperator<Real> alpha_blend_operator{multiplier, scale, offset};
-                apply_binary_operator(type, v, generator, alpha_blend_operator);
+                result = apply_binary_operator(type, v, generator, alpha_blend_operator);
             }
             else if (type == "AlphaToColorOperator")
             {
@@ -541,7 +545,7 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
                 parse_multiplier_scale_and_offset(v, multiplier, scale, offset);
 
                 bluedot::AlphaToColorOperator<Real> alpha_to_color_operator{multiplier, scale, offset};
-                apply_unary_operator(type, v, generator, alpha_to_color_operator);
+                result = apply_unary_operator(type, v, generator, alpha_to_color_operator);
             }
             else if (type == "ColorToAlphaOperator")
             {
@@ -552,7 +556,7 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
                 parse_multiplier_scale_and_offset(v, multiplier, scale, offset);
 
                 bluedot::ColorToAlphaOperator<Real> color_to_alpha_operator{multiplier, scale, offset};
-                apply_unary_operator(type, v, generator, color_to_alpha_operator);
+                result = apply_unary_operator(type, v, generator, color_to_alpha_operator);
             }
             else if (type == "FBMOperator")
             {
@@ -573,7 +577,7 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
                 parse_multiplier_scale_and_offset(v, multiplier, scale, offset);
 
                 bluedot::FBMOperator<Real, generator_type> fbm_operator{random_number_generator, octaves, exponent, multiplier, scale, offset};
-                apply_unary_operator(type, v, generator, fbm_operator);
+                result = apply_unary_operator(type, v, generator, fbm_operator);
             }
             else if (type == "FillOperator")
             {
@@ -584,7 +588,18 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
                 parse_multiplier_scale_and_offset(v, multiplier, scale, offset);
 
                 bluedot::FillOperator<Real> fill_operator{multiplier, scale, offset};
-                apply_unary_operator(type, v, generator, fill_operator);
+                result = apply_unary_operator(type, v, generator, fill_operator);
+            }
+            else if (type == "GradientOperator")
+            {
+                std::vector<Real> multiplier;
+                Real scale{static_cast<Real>(1.0)};
+                Real offset{static_cast<Real>(0.0)};
+
+                parse_multiplier_scale_and_offset(v, multiplier, scale, offset);
+
+                bluedot::GradientOperator<Real> gradient_operator{multiplier, scale, offset};
+                result = apply_unary_operator(type, v, generator, gradient_operator);
             }
             else if (type == "GreaterThanOperator")
             {
@@ -603,7 +618,7 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
                 }
 
                 bluedot::GreaterThanOperator<Real> greater_than_operator{level, clamp};
-                apply_unary_operator(type, v, generator, greater_than_operator);
+                result = apply_unary_operator(type, v, generator, greater_than_operator);
             }
             else if (type == "LessThanOperator")
             {
@@ -622,7 +637,7 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
                 }
 
                 bluedot::LessThanOperator<Real> less_than_operator{level, clamp};
-                apply_unary_operator(type, v, generator, less_than_operator);
+                result = apply_unary_operator(type, v, generator, less_than_operator);
             }
             else if (type == "MultiplyOperator")
             {
@@ -633,16 +648,21 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
                 parse_multiplier_scale_and_offset(v, multiplier, scale, offset);
 
                 bluedot::MultiplyOperator<Real> multiply_operator{multiplier, scale, offset};
-                apply_binary_operator(type, v, generator, multiply_operator);
+                result = apply_binary_operator(type, v, generator, multiply_operator);
             }
             else if (type == "SwapOperator")
             {
                 bluedot::SwapOperator<Real> swap_operator;
-                apply_binary_operator(type, v, generator, swap_operator);
+                result = apply_binary_operator(type, v, generator, swap_operator);
             }
             else
             {
                 std::cerr << "Unknown operator type: " << type << "\n";
+                result = false;
+            }
+            if (!result)
+            {
+                std::cerr << "Failed to apply operator of type: " << type << "\n";
             }
         }
     }
@@ -668,7 +688,7 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
 
 auto main(int argc, char** argv) -> int
 {
-    std::cout << "BlueDot 1.0" << std::endl;
+    std::cout << "bluedot 1.0" << std::endl;
 
     po::options_description desc("Allowed options");
     desc.add_options()
