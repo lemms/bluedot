@@ -54,6 +54,11 @@ The configuration file is a hierarchical file containing these nodes:
            <see the section Operators for details>
 ```
 
+#Layers:
+
+The generator can hold multiple layers, with different channel formats.
+There must be at least one layer called "base", which will be rendered into the output file.
+
 #Operators:
 
 Operators in bluedot are applied in the top down order they are listed in the file.
