@@ -1,0 +1,6 @@
+message("Adding generator library")
+add_library(generator generator.cpp)
+message("Including: ${Boost_INCLUDE_DIRS}")
+include_directories(include ${Boost_INCLUDE_DIRS})
+message("Linking: ${Boost_LIBRARIES}")
+target_link_libraries(generator ${Boost_LIBRARIES})

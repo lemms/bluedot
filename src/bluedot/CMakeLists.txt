@@ -1,0 +1,6 @@
+message("Added bluedot executable")
+add_executable(bluedot bluedot.cpp)
+message("Including: ${Boost_INCLUDE_DIRS} ${PNG_INCLUDE_DIRS}")
+include_directories(${Boost_INCLUDE_DIRS} ${PNG_INCLUDE_DIRS})
+message("Linking: ${Boost_LIBRARIES} ${PNG_LIBRARIES}")
+target_link_libraries(bluedot generator ${Boost_LIBRARIES} ${PNG_LIBRARIES})
