@@ -21,6 +21,7 @@ namespace bluedot {
         {
             size_t x = static_cast<size_t>(s) % layer0.width();
             size_t y = static_cast<size_t>(s) / layer0.width();
+            Real u{std::max(static_cast<Real>(0.0), std::min(static_cast<Real>(1.0), layer1(x, y, 0)))};
             for (size_t c{1}; c < layer0.channels(); ++c)
             {
                 Real value{_scale * layer1(x, y, c)};
@@ -29,7 +30,6 @@ namespace bluedot {
                     value *= _multiplier[c];
                 }
                 value += _offset;
-                Real u{std::max(static_cast<Real>(0.0), std::min(static_cast<Real>(1.0), layer1(x, y, 0)))};
                 layer0(x, y, c) = (static_cast<Real>(1.0) - u) * layer0(x, y, c) + u * value;
             }
         }
@@ -51,6 +51,7 @@ namespace bluedot {
         {
             size_t x = static_cast<size_t>(s) % layer0.width();
             size_t y = static_cast<size_t>(s) / layer0.width();
+            Real u{std::max(static_cast<Real>(0.0), std::min(static_cast<Real>(1.0), layer1(x, y, 0)))};
             for (size_t c{1}; c < layer0.channels(); ++c)
             {
                 Real value{_scale * layer1(x, y, c)};
@@ -60,7 +61,6 @@ namespace bluedot {
                 }
                 value += _offset;
                 Real t{mask(x, y, 0)};
-                Real u{std::max(static_cast<Real>(0.0), std::min(static_cast<Real>(1.0), layer1(x, y, 0)))};
                 layer0(x, y, c) = (static_cast<Real>(1.0) - t) * layer0(x, y, c) + t * ((static_cast<Real>(1.0) - u) * layer0(x, y, c) + u * value);
             }
         }
