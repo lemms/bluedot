@@ -231,104 +231,138 @@ This file generates a set of green islands in a blue ocean.
     "map" :
     {
         "seed" : 1024,
-            "width" : 2048,
-            "height" : 2048,
-            "layers" :
+        "width" : 1024,
+        "height" : 1024,
+        "layers" :
+        {
+            "layer" :
             {
-                "layer" :
+                "name" : "base",
+                "channels" : 4
+            },
+            "layer" :
+            {
+                "name" : "islands",
+                "channels" : 4
+            },
+            "layer" :
+            {
+                "name" : "islands2",
+                "channels" : 4
+            }
+        },
+        "operators" :
+        {
+            "operator" :
+            {
+                "type" : "FillOperator",
+                "layer" : "base",
+                "multiplier" : 
                 {
-                    "name" : "base",
-                    "channels" : 4
+                    "format" : "Char",
+                    "a" : 255,
+                    "r" : 46,
+                    "g" : 82,
+                    "b" : 140
                 },
-                "layer" :
+                "scale" : 1.5
+            },
+            "operator" :
+            {
+                "type" : "FBMOperator",
+                "layer" : "islands",
+                "octaves" : 6,
+                "exponent" : 2.2,
+                "multiplier" : 
                 {
-                    "name" : "islands",
-                    "channels" : 4
+                    "format" : "Char",
+                    "a" : 255,
+                    "r" : 36,
+                    "g" : 109,
+                    "b" : 47
+                },
+                "scale" : 0.3,
+                "offset" : -0.7
+            },
+            "operator" :
+            {
+                "type" : "LessThanOperator",
+                "layer" : "islands",
+                "mode" : "Clamp",
+                "level" : 
+                {
+                    "format" : "Char",
+                    "a" : 255,
+                    "r" : 36,
+                    "g" : 109,
+                    "b" : 47
                 }
             },
-            "operators" :
+            "operator" :
             {
-                "operator" :
+                "type" : "GreaterThanOperator",
+                "layer" : "islands",
+                "level" :
                 {
-                    "type" : "FillOperator",
-                    "layer" : "base",
-                    "multiplier" : 
-                    {
-                        "format" : "Char",
-                        "a" : 255,
-                        "r" : 46,
-                        "g" : 82,
-                        "b" : 140
-                    }
-                },
-                "operator" :
-                {
-                    "type" : "FBMOperator",
-                    "layer" : "islands",
-                    "octaves" : 7,
-                    "exponent" : 2.2,
-                    "multiplier" : 
-                    {
-                        "format" : "Char",
-                        "a" : 255,
-                        "r" : 36,
-                        "g" : 109,
-                        "b" : 47
-                    },
-                    "scale" : 0.3,
-                    "offset" : -0.7
-                },
-                "operator" :
-                {
-                    "type" : "FBMOperator",
-                    "layer" : "islands",
-                    "octaves" : 3,
-                    "exponent" : 2.0,
-                    "multiplier" : 
-                    {
-                        "format" : "Char",
-                        "a" : 255,
-                        "r" : 36,
-                        "g" : 109,
-                        "b" : 47
-                    },
-                    "scale" : 0.6,
-                    "offset" : 0.0
-                },
-                "operator" :
-                {
-                    "type" : "LessThanOperator",
-                    "layer" : "islands",
-                    "mode" : "Clamp",
-                    "level" : 
-                    {
-                        "format" : "Char",
-                        "a" : 255,
-                        "r" : 36,
-                        "g" : 109,
-                        "b" : 47
-                    }
-                },
-                "operator" :
-                {
-                    "type" : "GreaterThanOperator",
-                    "layer" : "islands",
-                    "level" :
-                    {
-                        "a" : 0,
-                        "r" : 0,
-                        "g" : 0,
-                        "b" : 0
-                    }
-                },
-                "operator" :
-                {
-                    "type" : "AlphaBlendOperator",
-                    "layer0" : "base",
-                    "layer1" : "islands"
+                    "a" : 0,
+                    "r" : 0,
+                    "g" : 0,
+                    "b" : 0
                 }
+            },
+            "operator" :
+            {
+                "type" : "FBMOperator",
+                "layer" : "islands2",
+                "octaves" : 3,
+                "exponent" : 3.0,
+                "multiplier" : 
+                {
+                    "format" : "Char",
+                    "a" : 255,
+                    "r" : 36,
+                    "g" : 109,
+                    "b" : 47
+                },
+                "scale" : 0.1,
+                "offset" : -0.1
+            },
+            "operator" :
+            {
+                "type" : "AlphaBlendOperator",
+                "layer0" : "islands",
+                "layer1" : "islands2"
+            },
+            "operator" :
+            {
+                "type" : "FBMOperator",
+                "layer" : "islands2",
+                "octaves" : 2,
+                "exponent" : 2.5,
+                "multiplier" : 
+                {
+                    "format" : "Char",
+                    "a" : 255,
+                    "r" : 36,
+                    "g" : 109,
+                    "b" : 47
+                },
+                "scale" : 0.2,
+                "offset" : -0.05
+            },
+            "operator" :
+            {
+                "type" : "AlphaBlendOperator",
+                "layer0" : "islands",
+                "layer1" : "islands2"
+            },
+            "operator" :
+            {
+                "type" : "AlphaBlendOperator",
+                "layer0" : "base",
+                "layer1" : "islands"
             }
+        }
     }
 }
 ```
-
