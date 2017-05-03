@@ -1,14 +1,14 @@
-// fillop.hpp
+// maddop.hpp
 // Copyright Laurence Emms 2017
 
 namespace bluedot {
     template <typename Real>
-    FillOperator<Real>::FillOperator(const std::vector<Real>& multiplier, Real scale, Real offset) : _multiplier(multiplier), _scale(scale), _offset(offset)
+    MADDOperator<Real>::MADDOperator(const std::vector<Real>& multiplier, Real scale, Real offset) : _multiplier(multiplier), _scale(scale), _offset(offset)
     {
     }
 
     template <typename Real>
-    auto FillOperator<Real>::operator()(Layer<Real>& layer) -> bool
+    auto MADDOperator<Real>::operator()(Layer<Real>& layer) -> bool
     {
         int num_samples = static_cast<int>(layer.width() * layer.height());
 #pragma omp parallel for schedule(guided)
@@ -18,7 +18,7 @@ namespace bluedot {
             size_t y = static_cast<size_t>(s) / layer.width();
             for (size_t c{0}; c < layer.channels(); ++c)
             {
-                Real value{_scale};
+                Real value{layer(x, y, c) * _scale};
                 if (c < _multiplier.size())
                 {
                     value *= _multiplier[c];
@@ -32,7 +32,7 @@ namespace bluedot {
     }
 
     template <typename Real>
-    auto FillOperator<Real>::operator()(Layer<Real>& layer, Layer<Real>& mask) -> bool
+    auto MADDOperator<Real>::operator()(Layer<Real>& layer, Layer<Real>& mask) -> bool
     {
         assert(mask.channels() > 0);
 
@@ -44,7 +44,7 @@ namespace bluedot {
             size_t y = static_cast<size_t>(s) / layer.width();
             for (size_t c{0}; c < layer.channels(); ++c)
             {
-                Real value{_scale};
+                Real value{layer(x, y, c) * _scale};
                 if (c < _multiplier.size())
                 {
                     value *= _multiplier[c];

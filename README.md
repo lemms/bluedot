@@ -1,7 +1,7 @@
 # bluedot
 bluedot planet texture generator
 
-#Usage:
+# Usage
 
 ```
 bluedot 1.0
@@ -16,7 +16,7 @@ Refer to the Configuration Format section for details on the formatting of the i
 
 bluedot outputs a .ppm file with the planet texture.
 
-#Configuration Format:
+# Configuration Format
 
 The configuration file is a hierarchical file containing these nodes:
 
@@ -54,17 +54,17 @@ The configuration file is a hierarchical file containing these nodes:
            <see the section Operators for details>
 ```
 
-#Layers:
+# Layers
 
 The generator can hold multiple layers, with different channel formats.
 There must be at least one layer called "base", which will be rendered into the output file.
 
-#Operators:
+# Operators
 
 Operators in bluedot are applied in the top down order they are listed in the file.
 bluedot has two kinds of operator:
-- unary operators act on a single layer.
-- binary operators act on two layers, layer0 and layer1, overwriting the data in layer0.
+* unary operators act on a single layer.
+* binary operators act on two layers, layer0 and layer1, overwriting the data in layer0.
 
 All available operators are listed with their required and optional parameters in the section Operator List.
 
@@ -105,7 +105,7 @@ Real for real numbers
 Char for values in the range [0, 256)
 Percent for values in the range [0, 100)
 
-#Operator List:
+# Operator List
 
 AlphaBlendOperator
 Performs alpha blending between two layers.
@@ -183,8 +183,27 @@ If it is greater than level, it is either set to 0 or clamped to the level depen
 - [level : <per channel level to compare with>]
 ```
 
+MADDOperator
+Multiplies a layer by a value and adds an offset
+```
+- layer : <name of layer>
+- [multiplier : <per channel multiplier>]
+- [scale : <scale>]
+- [offset : <offset>]
+```
+
 MultiplyOperator
 Multiplies layer0 and layer1 and stores the result in layer0
+```
+- layer0 : <name of layer0>
+- layer1 : <name of layer1>
+- [multiplier : <per channel multiplier>]
+- [scale : <scale>]
+- [offset : <offset>]
+```
+
+NoiseOperator
+Generates noise in the range [-1, 1] * multiplier * scale + offset.
 ```
 - layer0 : <name of layer0>
 - layer1 : <name of layer1>
@@ -200,10 +219,10 @@ Swaps the values of layer0 and layer1
 - layer1 : <name of layer1>
 ```
 
-#Examples:
+# Examples
 
 
-##islands.json:
+## islands.json
 
 This file generates a set of green islands in a blue ocean.
 

@@ -74,8 +74,6 @@ namespace bluedot {
         {
             size_t x{static_cast<size_t>(s) % layer.width()};
             size_t y{static_cast<size_t>(s) / layer.width()};
-            if (mask(x, y, 0) <= static_cast<Real>(0.0))
-                continue;
 
             size_t up{std::min(layer.height(), y + 1)};
             size_t down{static_cast<size_t>(std::max(0, static_cast<int>(y) - 1))};
@@ -108,8 +106,10 @@ namespace bluedot {
             }
             x_gradient += _offset;
             y_gradient += _offset;
-            layer(x, y, 1) = x_gradient;
-            layer(x, y, 2) = y_gradient;
+
+            Real t{mask(x, y, 0)};
+            layer(x, y, 1) = (static_cast<Real>(1.0) - t) * layer(x, y, 1) + t * x_gradient;
+            layer(x, y, 2) = (static_cast<Real>(1.0) - t) * layer(x, y, 2) + t * y_gradient;
         }
 
         return true;

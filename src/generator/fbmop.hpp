@@ -30,7 +30,7 @@ namespace bluedot {
                     value *= _multiplier[c];
                 }
                 value += _offset;
-                layer(x, y, c) += value;
+                layer(x, y, c) = value;
             }
         }
 
@@ -51,13 +51,14 @@ namespace bluedot {
             size_t y = static_cast<size_t>(s) / layer.width();
             for (size_t c{0}; c < layer.channels(); ++c)
             {
-                Real value{fbm(x, y) * mask(x, y, 0) * _scale};
+                Real value{fbm(x, y) * _scale};
                 if (c < _multiplier.size())
                 {
                     value *= _multiplier[c];
                 }
                 value += _offset;
-                layer(x, y, c) += value;
+                Real t{mask(x, y, 0)};
+                layer(x, y, c) = (static_cast<Real>(1.0) - t) * layer(x, y, c) + t * value;
             }
         }
 

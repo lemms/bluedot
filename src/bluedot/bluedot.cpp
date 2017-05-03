@@ -22,6 +22,7 @@
 #include "../generator/gradientop.h"
 #include "../generator/greaterthanop.h"
 #include "../generator/lessthanop.h"
+#include "../generator/maddop.h"
 #include "../generator/multiplyop.h"
 #include "../generator/noiseop.h"
 #include "../generator/swapop.h"
@@ -639,6 +640,17 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
                 bluedot::LessThanOperator<Real> less_than_operator{level, clamp};
                 result = apply_unary_operator(type, v, generator, less_than_operator);
             }
+            else if (type == "MADDOperator")
+            {
+                std::vector<Real> multiplier;
+                Real scale{static_cast<Real>(1.0)};
+                Real offset{static_cast<Real>(0.0)};
+
+                parse_multiplier_scale_and_offset(v, multiplier, scale, offset);
+
+                bluedot::MADDOperator<Real> madd_operator{multiplier, scale, offset};
+                result = apply_unary_operator(type, v, generator, madd_operator);
+            }
             else if (type == "MultiplyOperator")
             {
                 std::vector<Real> multiplier;
@@ -649,6 +661,17 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
 
                 bluedot::MultiplyOperator<Real> multiply_operator{multiplier, scale, offset};
                 result = apply_binary_operator(type, v, generator, multiply_operator);
+            }
+            else if (type == "NoiseOperator")
+            {
+                std::vector<Real> multiplier;
+                Real scale{static_cast<Real>(1.0)};
+                Real offset{static_cast<Real>(0.0)};
+
+                parse_multiplier_scale_and_offset(v, multiplier, scale, offset);
+
+                bluedot::NoiseOperator<Real, generator_type> noise_operator{random_number_generator, multiplier, scale, offset};
+                result = apply_unary_operator(type, v, generator, noise_operator);
             }
             else if (type == "SwapOperator")
             {

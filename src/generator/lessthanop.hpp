@@ -19,6 +19,7 @@ namespace bluedot {
             for (size_t c{0}; c < layer.channels(); ++c)
             {
                 if (c < _level.size() && layer(x, y, c) >= _level[c])
+                {
                     if (_clamp)
                     {
                         layer(x, y, c) = _level[c];
@@ -27,6 +28,7 @@ namespace bluedot {
                     {
                         layer(x, y, c) = static_cast<Real>(0.0);
                     }
+                }
             }
         }
 
@@ -46,16 +48,18 @@ namespace bluedot {
             size_t y = static_cast<size_t>(s) / layer.width();
             for (size_t c{0}; c < layer.channels(); ++c)
             {
-                if (mask(x, y, 0) > static_cast<Real>(0.0))
-                    if (c < _level.size() && layer(x, y, c) >= _level[c])
-                        if (_clamp)
-                        {
-                            layer(x, y, c) = _level[c];
-                        }
-                        else
-                        {
-                            layer(x, y, c) = static_cast<Real>(0.0);
-                        }
+                if (c < _level.size() && layer(x, y, c) >= _level[c])
+                {
+                    Real t{mask(x, y, 0)};
+                    if (_clamp)
+                    {
+                        layer(x, y, c) = (static_cast<Real>(1.0) - t) * layer(x, y, c) + t * _level[c];
+                    }
+                    else
+                    {
+                        layer(x, y, c) = (static_cast<Real>(1.0) - t) * layer(x, y, c);
+                    }
+                }
             }
         }
 
