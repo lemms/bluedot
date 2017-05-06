@@ -13,4 +13,5 @@
 #include "maddop.h"
 #include "multiplyop.h"
 #include "noiseop.h"
+#include "normalizeop.h"
 #include "swapop.h"

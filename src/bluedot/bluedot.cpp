@@ -25,6 +25,7 @@
 #include "../generator/maddop.h"
 #include "../generator/multiplyop.h"
 #include "../generator/noiseop.h"
+#include "../generator/normalizeop.h"
 #include "../generator/swapop.h"
 #include "../generator/generator.h"
 
@@ -672,6 +673,11 @@ auto apply_operators(pt::ptree& property_tree, bluedot::Generator<Real>& generat
 
                 bluedot::NoiseOperator<Real, generator_type> noise_operator{random_number_generator, multiplier, scale, offset};
                 result = apply_unary_operator(type, v, generator, noise_operator);
+            }
+            else if (type == "NormalizeOperator")
+            {
+                bluedot::NormalizeOperator<Real> normalize_operator;
+                result = apply_unary_operator(type, v, generator, normalize_operator);
             }
             else if (type == "SwapOperator")
             {

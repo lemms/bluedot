@@ -212,6 +212,12 @@ Generates noise in the range [-1, 1] * multiplier * scale + offset.
 - [offset : <offset>]
 ```
 
+NormalizeOperator
+Normalizes all color channels to the range [0, 1).
+```
+- layer : <name of layer>
+```
+
 SwapOperator
 Swaps the values of layer0 and layer1
 ```
