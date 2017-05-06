@@ -1,4 +1,6 @@
 // fbm.h
+// Implementation of FBM
+// c.f. Fractal Brownian Motion by Patricio Gonzalez Vivo & Jen Lowe https://thebookofshaders.com/13/
 // Copyright Laurence Emms 2017
 
 #pragma once

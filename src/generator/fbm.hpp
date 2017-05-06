@@ -5,7 +5,7 @@ namespace bluedot {
     template <typename T, typename RNG>
     FBM<T, RNG>::FBM(RNG& rng, size_t width, size_t height, size_t octaves, T exponent, bool spherical) : _width(width), _height(height)
     {
-        T weight = static_cast<T>(1.0) / static_cast<T>(octaves);
+        T weight = static_cast<T>(0.5) / std::pow(exponent, static_cast<T>(1.0) - static_cast<T>(octaves));
         _noise.resize(_width * _height, static_cast<T>(0.0));
         for (size_t y{0}; y < _height; ++y)
         {
